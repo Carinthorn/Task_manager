@@ -1,3 +1,2 @@
-def main(){
+def main():
     print("Hello")
-}
