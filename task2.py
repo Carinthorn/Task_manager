@@ -21,6 +21,7 @@ for i in range(24):
         time_slot.append(str(i) + ":30AM")
 
 notify_me = ["Yes", "No"]
+category_list = ["None", "Work", "Study", "Exercise", "Leisure", "Others"]
 
 #global var 
 today  = datetime.now()
@@ -57,7 +58,6 @@ class Planner(tk.Tk):
         
     def call_day(self):
         self.dayframe = Day(self)  # Create Day frame   
-        
         global current_page
         current_page = "Day"
         
@@ -79,15 +79,15 @@ class Day(tk.Frame):
         self.note.place(x = 90, y = 10)
         
         Label(inputframe, text = "Category", font = ("Arial", 15)).place(x = 0, y = 42)
-        self.category = Entry(inputframe, borderwidth = 1)
-        self.category.place(x = 90, y = 40)
+        self.category = Collapsible_list.create(self, frame=inputframe, width = 15, datalist=category_list, x = 90, y = 40, canType=True)
+        # self.category = Entry(inputframe, borderwidth = 1)
+        # self.category.place(x = 90, y = 40)
         
         #create collapsible time lists
         Label(inputframe, text = "Time period (From - To)", font = ("Arial", 15)).place(x = 0, y = 70)
         self.start_time = Collapsible_list.create(self, frame=inputframe, width = 7, datalist=time_slot, x = 90, y = 100)
         self.end_time = Collapsible_list.create(self, frame=inputframe, width = 7, datalist=time_slot, x = 200, y = 100)
         
-            
         Label(inputframe, text = "Location", font = ("Arial", 15)).place(x = 0, y = 130)
         self.location = tk.Entry(inputframe, width = 15, borderwidth = 1)
         self.location.place(x = 90, y = 130)
@@ -96,35 +96,17 @@ class Day(tk.Frame):
         self.notify = Collapsible_list.create(self, frame=inputframe, width = 7, datalist=notify_me, x = 90, y = 160)
         
         Button(inputframe, text="Save", font=("Arial", 15), command = self.save_data,  width = 5, borderwidth=0, highlightthickness=0, pady = 10, background="#ABBBF0").place(x = 190, y = 200)
-        
-    #help save shoudl be error handling format?
-    #help if user enters not a number in time period field / notify me = error handling
+                 
     #help add if condition : if the time_slot has already existed, then show msgbox whether to replace or not
     def save_data(self): 
-        self.notify = ""
-        self.start_t = ""
-        self.end_t = ""
-        self.start = ""
-        self.end = ""
-        
-        #error handling here
-        while True:
-            self.notify = self.notify
-            self.start_t = self.start_time.get()
-            self.end_t = self.end_time.get()
-            try: 
-                self.start = float(self.start_t[:len(self.start_t)-2])
-                self.end = float(self.end_t[:len(self.end_t)-2])
-                
-                if self.notify not in notify_me:
-                    raise InvalidValueError()
-                break
-            except ValueError: 
-                tk.messagebox.showerror(title="invalid time format", message="Error: Please enter a valid time format", icon="warning")
-            except InvalidValueError: 
-                tk.messagebox.showerror(title="invalid notify me", message="Error: Please select Yes or No", icon="warning")
-
-        if self.note == "" or self.category == "" or self.location == "" or self.start == "" or self.end == "" or self.notify == "":
+        self.category_result = self.category.get()
+        self.notify_result = self.notify.get()
+        self.start_t = self.start_time.get()
+        self.end_t = self.end_time.get()
+        self.start = float(self.start_t[:len(self.start_t)-2])
+        self.end = float(self.end_t[:len(self.end_t)-2])
+    
+        if self.note == "" or self.category_result == "" or self.location == "" or self.start == "" or self.end == "" or self.notify_result == "":
             tk.messagebox.showerror(title="incomplete info", message="Please fill in all the information", icon="warning")
         else: 
             if self.start == self.end: 
@@ -132,6 +114,7 @@ class Day(tk.Frame):
             elif self.start > self.end:  
                 tk.messagebox.showerror(title="invalid start end time", message= "Start time cannot be later than End time", icon="warning")
             else: 
+                category_list.append(self.category_result)
                 data = {
                     'Year': current_year,
                     'Month': current_month,
@@ -143,11 +126,11 @@ class Day(tk.Frame):
                                 {
                                     '1' : {
                                         'note' : self.note.get(), 
-                                        'category' : self.category.get(),
+                                        'category' : self.category_result,
                                         'location' : self.location.get(),
                                         'start' : self.start_t,
                                         'end' : self.end_t,
-                                        'notify_me' : self.notify.get()
+                                        'notify_me' : self.notify_result
                                     }
                                 }
                             ]
@@ -165,11 +148,11 @@ class Day(tk.Frame):
                             id = len(n['Time_slot']) + 1
                             n['Time_slot'].append({str(id) : {
                                             'note' : self.note.get(), 
-                                            'category' : self.category.get(),
+                                            'category' : self.category_result,
                                             'location' : self.location.get(),
                                             'start' : self.start_t,
                                             'end' : self.end_t,
-                                            'notify_me' : self.notify.get()
+                                            'notify_me' : self.notify_result
                                         }})
                             print("Success1")
                         elif i == len(loaded_data['Day']) - 1: 
@@ -180,23 +163,22 @@ class Day(tk.Frame):
                                     {
                                         str(id) : {
                                             'note' : self.note.get(), 
-                                            'category' : self.category.get(),
+                                            'category' : self.category_result,
                                             'location' : self.location.get(),
                                             'start' : self.start_t,
                                             'end' : self.end_t,
-                                            'notify_me' : self.notify.get()
+                                            'notify_me' : self.notify_result
                                         }
                                     }
                                 ]})
                             print("Success2")
-                
                 else: 
                     print(data)
                     loaded_data.append(data)
                     print("Success3")
                     
                 self.note.delete(0, 'end')
-                self.category.delete(0, 'end')
+                self.category.set('')
                 self.location.delete(0, 'end')
                 #clear combobox
                 self.start_time.set('')
@@ -204,6 +186,7 @@ class Day(tk.Frame):
                 self.notify.set('')
                 
                 print(loaded_data)
+                print(category_list)
                 
     def load_data(self, filename):
         loaded_data = None
@@ -212,10 +195,12 @@ class Day(tk.Frame):
         return loaded_data
         
 class Collapsible_list: 
-    def create(self, frame, width, datalist, row=None, column=None, x=None, y=None):
+    def create(self, frame, width, datalist, row=None, column=None, x=None, y=None, canType = False):
         data = tk.StringVar()
         data_combobox = ttk.Combobox(frame, width=width, textvariable=data)
         data_combobox['value'] = datalist
+        if canType == False: 
+            data_combobox['state'] = 'readonly'
         data_combobox.place(x=x, y=y)
         return data
 

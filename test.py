@@ -65,6 +65,7 @@
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter.messagebox import showinfo
 from calendar import month_name
 
@@ -92,6 +93,17 @@ month_cb['state'] = 'readonly'
 # place the widget
 month_cb.pack(fill=tk.X, padx=5, pady=5)
 
+# class InvalidValueError(Exception): 
+#     pass
+
+# try: 
+#     if selected_month not in month_cb['values']:
+#         raise InvalidValueError()
+# except InvalidValueError: 
+#     showinfo(
+#         tk.messagebox.showerror(title="invalid start end time", message= "Start time cannot be later than End time", icon="warning")
+#     )
+    
 
 # bind the selected value changes
 def month_changed(event):
@@ -102,5 +114,7 @@ def month_changed(event):
     )
 
 month_cb.bind('<<ComboboxSelected>>', month_changed)
+
+
 
 root.mainloop()
