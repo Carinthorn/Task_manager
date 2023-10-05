@@ -80,10 +80,7 @@ class Day(tk.Frame):
         
         Label(inputframe, text = "Category", font = ("Arial", 15)).place(x = 0, y = 42)
         self.category = Collapsible_list.create(self, frame=inputframe, width = 15, datalist=category_list, x = 90, y = 40, canType=True)
-        # self.category = Entry(inputframe, borderwidth = 1)
-        # self.category.place(x = 90, y = 40)
         
-        #create collapsible time lists
         Label(inputframe, text = "Time period (From - To)", font = ("Arial", 15)).place(x = 0, y = 70)
         self.start_time = Collapsible_list.create(self, frame=inputframe, width = 7, datalist=time_slot, x = 90, y = 100)
         self.end_time = Collapsible_list.create(self, frame=inputframe, width = 7, datalist=time_slot, x = 200, y = 100)
@@ -105,8 +102,9 @@ class Day(tk.Frame):
         self.end_t = self.end_time.get()
         self.start = float(self.start_t[:len(self.start_t)-2])
         self.end = float(self.end_t[:len(self.end_t)-2])
-    
-        if self.note == "" or self.category_result == "" or self.location == "" or self.start == "" or self.end == "" or self.notify_result == "":
+
+    #this shouldn't be if else note/category/location not
+        if self.note.get() == "" or self.category_result == "" or self.location.get() == "" :
             tk.messagebox.showerror(title="incomplete info", message="Please fill in all the information", icon="warning")
         else: 
             if self.start == self.end: 
