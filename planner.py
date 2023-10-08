@@ -103,10 +103,9 @@ class Day(tk.Frame):
         self.start = float(self.start_t[:len(self.start_t)-2])
         self.end = float(self.end_t[:len(self.end_t)-2])
 
-    #this shouldn't be if else note/category/location not
         if self.note.get() == "" or self.category_result == "" or self.location.get() == "" :
             tk.messagebox.showerror(title="incomplete info", message="Please fill in all the information", icon="warning")
-        else: 
+        else:
             if self.start == self.end: 
                 tk.messagebox.showerror(title="the same start end time",message="Error: Start time and End time cannot be the same", icon="warning")
             elif self.start > self.end:  

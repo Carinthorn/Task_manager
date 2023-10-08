@@ -63,58 +63,86 @@
 # start = float(word[:len(word)-2])
 # print(start)
 
-import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
-from tkinter.messagebox import showinfo
-from calendar import month_name
+from datetime import datetime
 
-root = tk.Tk()
+current_year = datetime.now().strftime("%Y")
+current_month = datetime.now().strftime("%B")
+current_date = datetime.now().strftime("%d")
+current_day = datetime.now().strftime("%A")
 
-# config the root window
-root.geometry('300x200')
-root.resizable(False, False)
-root.title('Combobox Widget')
+data = {
+    'Year': "2023",
+    'Month': "October",
+    'Day' : [
+        {
+            'Date': "07",
+            'Day_of_week' : "Sunday",
+            'Time_slot' : [
+                {
+                    '1' : {
+                        'note' : "BB", 
+                        'category' : "Work",
+                        'location' : "G",
+                        'start' : "12.30AM",
+                        'end' : "13.00AM",
+                        'notify_me' : "Yes"
+                    }
+                }
+            ]
+        },
+        {
+            'Date': "08",
+            'Day_of_week' : "Sunday",
+            'Time_slot' : [
+                {
+                    '1' : {
+                        'note' : "Basketball", 
+                        'category' : "None",
+                        'location' : "Gym",
+                        'start' : "10.30AM",
+                        'end' : "11.00AM",
+                        'notify_me' : "Yes"
+                    }
+                }
+            ]
+        }
+    ]
+}
+year = "2023"
+month = "October"
+date = "08"
+info = []
 
-# label
-label = ttk.Label(text="Please select a month:")
-label.pack(fill=tk.X, padx=5, pady=5)
+# for i in data: 
+#     if i['Year'] == year and i['Month'] == month:
+#         for j in i['Day']:
+#             if j['Date'] == date:
+#                 for time in j['Time_slot']:
+#                     for t in time:
+#                         info.append((t['start'] + " to "+ t['end'], t['note'], t['location'], t['notify_me']))
+ 
+ 
+#year, month, date, start, end, note, location, notify_me
+# print(data['Year'])
+# print(data['Month'])
+# print(data['Day'][0]['Date'])
+# print(data['Day'][0]['Time_slot'][0]['1']['start'])
+# print(data['Day'][0]['Time_slot'][0]['1']['end'])
+# print(data['Day'][0]['Time_slot'][0]['1']['note'])
+# print(data['Day'][0]['Time_slot'][0]['1']['location'])
+# print(data['Day'][0]['Time_slot'][0]['1']['notify_me'])
 
-# create a combobox
-selected_month = tk.StringVar()
-month_cb = ttk.Combobox(root, textvariable=selected_month)
+if data['Year'] == year and data['Month'] == month:
+    for i, j in enumerate(data['Day']):
+        if j['Date'] == date:
+            id = 0
+            for time in j['Time_slot']:
+                id += 1
+                info.append((time[str(id)]['start'] + " to "+ time[str(id)]['end'], time[str(id)]['note'], time[str(id)]['location'], time[str(id)]['notify_me']))
+        elif i == len(data['Day']) - 1: 
+            print("Date not found")
+else: 
+    print("Year/Month not found")
+for i in info:
+    print(i)
 
-# get first 3 letters of every month name
-month_cb['values'] = [month_name[m][0:3] for m in range(1, 13)]
-
-# prevent typing a value
-month_cb['state'] = 'readonly'
-
-# place the widget
-month_cb.pack(fill=tk.X, padx=5, pady=5)
-
-# class InvalidValueError(Exception): 
-#     pass
-
-# try: 
-#     if selected_month not in month_cb['values']:
-#         raise InvalidValueError()
-# except InvalidValueError: 
-#     showinfo(
-#         tk.messagebox.showerror(title="invalid start end time", message= "Start time cannot be later than End time", icon="warning")
-#     )
-    
-
-# bind the selected value changes
-def month_changed(event):
-    """ handle the month changed event """
-    showinfo(
-        title='Result',
-        message=f'You selected {selected_month.get()}!'
-    )
-
-month_cb.bind('<<ComboboxSelected>>', month_changed)
-
-
-
-root.mainloop()
